@@ -5,6 +5,14 @@
 -- 最大回撤（Maximum Drawdown）：历史上最大的资金回落。
 -- 最长连亏（Max Losing Streak）：连续亏损最多有多少笔。
 -- Profit Factor ：每亏1美元，能赚多少美元回来
+-- 这些指标能完整回答：
+-- 指标                     对应问题
+-- Net Profit              我长期赚钱吗？
+-- Average R               我交易质量高吗？
+-- Profit Factor           我靠运气吗？
+-- Max Drawdown            我能承受最坏情况吗？
+-- Losing Streak           最近是不是状态崩了？
+-- Daily Trades            我是不是过度交易？
 
 -- 胜率（Win Rate）
 SELECT
