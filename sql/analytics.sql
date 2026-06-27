@@ -1,9 +1,10 @@
--- 五个指标组合起来，基本就能比较全面地评价一个交易策略的收益能力和风险水平
+-- SQL 分析模板库，基本就能比较全面地评价一个交易策略的收益能力和风险水平
 -- 总收益（Net Profit）：最终赚了多少钱。
 -- 胜率（Win Rate）：盈利交易占比。
 -- 平均 R（Average R）：每笔交易的质量。
 -- 最大回撤（Maximum Drawdown）：历史上最大的资金回落。
 -- 最长连亏（Max Losing Streak）：连续亏损最多有多少笔。
+-- Profit Factor ：每亏1美元，能赚多少美元回来
 
 -- 胜率（Win Rate）
 SELECT
@@ -120,6 +121,20 @@ SELECT
     AVG(r_multiple) AS avg_r,
     SUM(CASE WHEN r_multiple >= 2 THEN 1 ELSE 0 END) AS big_wins,
     SUM(CASE WHEN r_multiple <= -1 THEN 1 ELSE 0 END) AS big_losses
+FROM trades
+WHERE status = 'CLOSED';
+
+-- Profit Factor（盈利因子）
+-- Profit Factor = 总盈利 ÷ 总亏损
+SELECT
+    SUM(CASE WHEN pnl > 0 THEN pnl ELSE 0 END) AS gross_profit,
+    ABS(SUM(CASE WHEN pnl < 0 THEN pnl ELSE 0 END)) AS gross_loss,
+    ROUND(
+        SUM(CASE WHEN pnl > 0 THEN pnl ELSE 0 END)
+        /
+        NULLIF(ABS(SUM(CASE WHEN pnl < 0 THEN pnl ELSE 0 END)), 0),
+        2
+    ) AS profit_factor
 FROM trades
 WHERE status = 'CLOSED';
 
