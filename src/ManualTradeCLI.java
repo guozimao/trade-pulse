@@ -11,12 +11,11 @@ public class ManualTradeCLI {
         while (true) {
 
             System.out.println("\n===== MANUAL TRADE MENU =====");
-            System.out.println("1. Add historical trade (open+close)");
-            System.out.println("2. Close open trade manually");
+            System.out.println("1. Add trade");
+            System.out.println("2. Close trade manually");
             System.out.println("3. Add Position manually");
             System.out.println("4. Reduce Position manually");
             System.out.println("5. update stopPrice manually");
-            System.out.println("6. Exit");
             System.out.print("Select: ");
 
             int choice = Integer.parseInt(sc.nextLine());
@@ -27,7 +26,6 @@ public class ManualTradeCLI {
                 if (choice == 3) positionAdd();
                 if (choice == 4) positionReduce();
                 if (choice == 5) updateStopPrice();
-                if (choice == 6) break;
 
             } catch (Exception e) {
                 e.printStackTrace();
