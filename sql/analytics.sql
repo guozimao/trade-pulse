@@ -23,13 +23,24 @@ SELECT
 
 FROM trades;
 
--- 三大指标一起查
+-- 胜率 平均R 总盈利 三大指标一起查
 SELECT
     date(entry_time / 1000, 'unixepoch', 'localtime') AS day,
-
+    SUM(CASE WHEN pnl > 0 THEN 1 ELSE 0 END) * 1.0 / COUNT(*) AS win_rate,
     COUNT(*) AS trades,
     SUM(pnl) AS pnl
 
 FROM trades
 GROUP BY day
 ORDER BY day;
+
+-- 单笔交易收益率
+-- (平仓价 - 开仓价) / 开仓价
+SELECT
+    id,
+    symbol,
+    entry_price,
+    exit_price,
+    (exit_price - entry_price) / entry_price AS return_pct
+FROM trades
+WHERE status = 'CLOSED';
