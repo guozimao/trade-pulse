@@ -29,19 +29,19 @@ WHERE status = 'CLOSED';
 -- 平均R / 总R / Expectancy
 SELECT
     COUNT(*) AS trades,
-    SUM(r_multiple) AS total_r,
-    AVG(r_multiple) AS avg_r,
-    MAX(r_multiple) AS best_r,
-    MIN(r_multiple) AS worst_r
+    ROUND(SUM(r_multiple) / 10000.0, 4) AS total_r,
+    ROUND(AVG(r_multiple) / 10000.0, 4) AS avg_r,
+    ROUND(MAX(r_multiple) / 10000.0, 4) AS best_r,
+    ROUND(MIN(r_multiple) / 10000.0, 4) AS worst_r
 FROM trades
 WHERE status = 'CLOSED';
 
 -- 盈亏统计（PnL）
 SELECT
-    SUM(pnl) AS net_profit,
-    AVG(pnl) AS avg_trade,
-    MAX(pnl) AS best_trade,
-    MIN(pnl) AS worst_trade
+    ROUND(SUM(pnl) / 10000.0, 4) AS net_profit,
+    ROUND(AVG(pnl) / 10000.0, 4) AS avg_trade,
+    ROUND(MAX(pnl) / 10000.0, 4) AS best_trade,
+    ROUND(MIN(pnl) / 10000.0, 4) AS worst_trade
 FROM trades
 WHERE status = 'CLOSED';
 
@@ -64,7 +64,7 @@ drawdown AS (
     FROM equity
 )
 SELECT
-    MIN(dd) AS max_drawdown
+    ROUND(MIN(dd) / 10000.0, 4) AS max_drawdown
 FROM drawdown;
 
 -- 连胜 / 连亏（非常关键）
@@ -91,19 +91,19 @@ ORDER BY streak_length DESC;
 
 -- 日内表现（按天 PnL）
 SELECT
-    DATE(entry_time / 1000, 'unixepoch', 'localtime') AS trade_date,
+    DATE(exit_time / 1000, 'unixepoch', 'localtime') AS trade_date,
     COUNT(*) AS trades,
-    SUM(pnl) AS daily_pnl,
-    SUM(r_multiple) AS daily_r,
-    AVG(pnl) AS avg_trade
+    ROUND(SUM(pnl) / 10000.0, 4) AS daily_pnl,
+    ROUND(SUM(r_multiple) / 10000.0, 4) AS daily_r,
+    ROUND(AVG(pnl) / 10000.0, 4) AS avg_trade
 FROM trades
 WHERE status = 'CLOSED'
-GROUP BY DATE(exit_time)
+GROUP BY DATE(exit_time / 1000, 'unixepoch', 'localtime')
 ORDER BY trade_date;
 
 -- 每天胜率
 SELECT
-    DATE(entry_time / 1000, 'unixepoch', 'localtime') AS trade_date,
+    DATE(exit_time / 1000, 'unixepoch', 'localtime') AS trade_date,
     COUNT(*) AS trades,
     SUM(CASE WHEN pnl > 0 THEN 1 ELSE 0 END) AS wins,
     ROUND(
@@ -112,31 +112,33 @@ SELECT
     ) AS win_rate
 FROM trades
 WHERE status = 'CLOSED'
-GROUP BY exit_time
+GROUP BY DATE(exit_time / 1000, 'unixepoch', 'localtime')
 ORDER BY trade_date;
 
 -- 交易频率（防过度交易）
 SELECT
-    DATE(entry_time / 1000, 'unixepoch', 'localtime') AS day,
+    DATE(exit_time / 1000, 'unixepoch', 'localtime') AS day,
     COUNT(*) AS trades
 FROM trades
 WHERE status = 'CLOSED'
-GROUP BY exit_time
+GROUP BY DATE(exit_time / 1000, 'unixepoch', 'localtime')
 ORDER BY day;
 
 -- 质量评分（简单系统）
 SELECT
-    AVG(r_multiple) AS avg_r,
-    SUM(CASE WHEN r_multiple >= 2 THEN 1 ELSE 0 END) AS big_wins,
-    SUM(CASE WHEN r_multiple <= -1 THEN 1 ELSE 0 END) AS big_losses
+    ROUND(AVG(r_multiple) / 10000.0, 4) AS avg_r,
+    SUM(CASE WHEN r_multiple >= 20000 THEN 1 ELSE 0 END) AS big_wins,
+    SUM(CASE WHEN r_multiple <= -10000 THEN 1 ELSE 0 END) AS big_losses
 FROM trades
 WHERE status = 'CLOSED';
 
 -- Profit Factor（盈利因子）
 -- Profit Factor = 总盈利 ÷ 总亏损
 SELECT
-    SUM(CASE WHEN pnl > 0 THEN pnl ELSE 0 END) AS gross_profit,
-    ABS(SUM(CASE WHEN pnl < 0 THEN pnl ELSE 0 END)) AS gross_loss,
+    ROUND(SUM(CASE WHEN pnl > 0 THEN pnl ELSE 0 END) / 10000.0, 4) AS gross_profit,
+
+    ROUND(ABS(SUM(CASE WHEN pnl < 0 THEN pnl ELSE 0 END)) / 10000.0, 4) AS gross_loss,
+
     ROUND(
         SUM(CASE WHEN pnl > 0 THEN pnl ELSE 0 END)
         /
@@ -151,8 +153,14 @@ WHERE status = 'CLOSED';
 SELECT
     id,
     symbol,
-    entry_price,
-    exit_price,
-    (exit_price - entry_price) / entry_price AS return_pct
+
+    ROUND(entry_price / 10000.0, 4) AS entry_price,
+    ROUND(exit_price / 10000.0, 4) AS exit_price,
+
+    ROUND(
+        (exit_price - entry_price) * 1.0 / entry_price,
+        6
+    ) AS return_pct
+
 FROM trades
 WHERE status = 'CLOSED';

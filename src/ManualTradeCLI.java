@@ -1,3 +1,4 @@
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Scanner;
@@ -54,7 +55,7 @@ public class ManualTradeCLI {
         t.qty = Integer.parseInt(sc.nextLine());
 
         System.out.print("Stop Price: ");
-        t.stopPrice = Integer.parseInt(sc.nextLine());
+        t.stopPrice = Double.parseDouble(sc.nextLine());
 
         System.out.println("Entry Time (timestamp): ");
         System.out.println("1. now");

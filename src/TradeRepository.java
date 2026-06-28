@@ -17,12 +17,12 @@ public class TradeRepository {
 
         ps.setString(1, t.symbol);
         ps.setLong(2, t.entryTime);
-        ps.setDouble(3, t.entryPrice);
-        ps.setDouble(4,t.stopPrice);
+        ps.setInt(3, (int) Math.round(t.entryPrice * 10000));
+        ps.setInt(4, (int) Math.round(t.stopPrice * 10000));
         ps.setInt(5, t.qty);
         ps.setString(6, t.strategy);
         ps.setString(7, t.status);
-        ps.setDouble(8, 0);
+        ps.setInt(8, 0);
 
         ps.executeUpdate();
         conn.close();
@@ -43,9 +43,9 @@ public class TradeRepository {
         try (Connection conn = DB.connect();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setDouble(1, exitPrice);
-            ps.setDouble(2, pnl);
-            ps.setDouble(3, rMultiple);
+            ps.setInt(1, (int) Math.round(exitPrice * 10000));
+            ps.setInt(2, (int) Math.round(pnl * 10000));
+            ps.setInt(3, (int) Math.round(rMultiple * 10000));
             ps.setLong(4, exitTime);
             ps.setString(5, symbol);
 
@@ -83,19 +83,19 @@ public class TradeRepository {
 
                 trade.setEntryTime(rs.getLong("entry_time"));
 
-                trade.setEntryPrice(rs.getDouble("entry_price"));
+                trade.setEntryPrice(rs.getInt("entry_price") / 10000.0);
 
-                trade.setStopPrice(rs.getDouble("stop_price"));
+                trade.setStopPrice(rs.getInt("stop_price") / 10000.0);
 
                 trade.setQty(rs.getInt("qty"));
 
                 trade.setStatus(rs.getString("status"));
 
-                trade.setExitPrice(rs.getDouble("exit_price"));
+                trade.setExitPrice(rs.getInt("exit_price") / 10000.0);
 
-                trade.setPnl(rs.getDouble("pnl"));
+                trade.setPnl(rs.getInt("pnl") / 10000.0);
 
-                trade.setrMultiple(rs.getDouble("r_multiple"));
+                trade.setrMultiple(rs.getInt("r_multiple") / 10000.0);
 
                 trade.setExitTime(rs.getLong("exit_time"));
 
@@ -121,7 +121,7 @@ public class TradeRepository {
         try (Connection conn = DB.connect();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setDouble(1, avgPrice);
+            ps.setInt(1, (int) Math.round(avgPrice * 10000));
             ps.setInt(2, newQty);
             ps.setString(3, symbol);
 
@@ -146,7 +146,7 @@ public class TradeRepository {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, newQty);
-            ps.setDouble(2, newPnl);
+            ps.setInt(2, (int) Math.round(newPnl * 10000));
             ps.setString(3, symbol);
 
             ps.executeUpdate();
@@ -168,7 +168,7 @@ public class TradeRepository {
         try (Connection conn = DB.connect();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setDouble(1, stopPrice);
+            ps.setInt(1, (int) Math.round(stopPrice * 10000));
             ps.setString(2, symbol);
 
             ps.executeUpdate();

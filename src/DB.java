@@ -16,13 +16,13 @@ public class DB {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 symbol TEXT,
                 entry_time INTEGER,
-                entry_price REAL,
-                stop_price REAL,
+                entry_price INTEGER,
+                stop_price INTEGER,
                 exit_time INTEGER,
-                exit_price REAL,
+                exit_price INTEGER,
                 qty INTEGER,
-                pnl REAL,
-                r_multiple REAL,
+                pnl INTEGER,
+                r_multiple INTEGER,
                 strategy TEXT,
                 status TEXT
             );
