@@ -153,14 +153,13 @@ WHERE status = 'CLOSED';
 SELECT
     id,
     symbol,
-
+    DATE(exit_time / 1000, 'unixepoch', 'localtime') AS exit_time,
     ROUND(entry_price / 10000.0, 4) AS entry_price,
     ROUND(exit_price / 10000.0, 4) AS exit_price,
-
     ROUND(
         (exit_price - entry_price) * 1.0 / entry_price,
         6
     ) AS return_pct
-
 FROM trades
-WHERE status = 'CLOSED';
+WHERE status = 'CLOSED'
+GROUP BY id;
